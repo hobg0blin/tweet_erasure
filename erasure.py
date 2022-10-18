@@ -9,12 +9,12 @@ with open("corpuses/rondesantisfl_tweets.csv", newline='') as csvfile:
     fascismreader = list(reader)
 
     outputrows = []
-    for line in baraka[0:500]:
+    for line in baraka[10:1000]:
         clean_line = line.strip()
         if (len(clean_line) > 1) :
             good_index = 0
+            output_phrase = []
             for row in fascismreader:
-                output_phrase = []
                 bad_words = row['text'].split()
                 # get characters from bad text and try to match next character in good text
                 for word in bad_words:
@@ -28,13 +28,17 @@ with open("corpuses/rondesantisfl_tweets.csv", newline='') as csvfile:
                             if letter == clean_line[good_index]:
                                 output_phrase.append(clean_line[good_index])
                                 good_index += 1
-                            else:
+                            elif (good_index >= 1):
                                 output_phrase.append(" ")
-                if (len("".join(output_phrase).strip())) > 0:
+                if (len(output_phrase) >= 280):
                     print('phrase len: ', len("".join(output_phrase).strip()))
-                    outputrows.append("".join(output_phrase))
+                    if (len("".join(output_phrase).strip()) > 0) :
+                        outputrows.append("".join(output_phrase))
+
+                    output_phrase = []
 #                    print('letter found! ' "".join(output_phrase))
 output = {'tweets': outputrows}
+print('output: ', output)
 json_output = json.dumps(output, indent=4)
 with open("output.json", "w") as outfile:
     outfile.write(json_output)
